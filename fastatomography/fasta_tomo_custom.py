@@ -30,10 +30,10 @@ def fasta(A, At, f, gradf, g, proxg, x0, y, angles, opts, vol_grad_weights = Non
     d1 = th.zeros_like(y, device=x1.device, dtype=x1.dtype)
     gradf1 = th.zeros_like(x1, device=x1.device, dtype=x1.dtype)
 
-    d1 = A(x1, out=d1, angles=angles)
+    d1 = A(x1, out=d1)
     f1 = f(d1)
     fvals[0] = f1
-    gradf1 = At(gradf(d1), out=gradf1, angles=angles)
+    gradf1 = At(gradf(d1), out=gradf1)
 
     if opts.accelerate:
         x_accel1 = x0
@@ -67,7 +67,7 @@ def fasta(A, At, f, gradf, g, proxg, x0, y, angles, opts, vol_grad_weights = Non
         x1 = proxg(x1hat, tau0)
 
         Dx = x1 - x0
-        d1 = A(x1, out=d1, angles=angles)
+        d1 = A(x1, out=d1)
         f1 = f(d1)
 
         if opts.backtrack and i > 0:
@@ -81,7 +81,7 @@ def fasta(A, At, f, gradf, g, proxg, x0, y, angles, opts, vol_grad_weights = Non
                 else:
                     x1hat = x0 - tau0 * gradf0 * vol_grad_weights
                 x1 = proxg(x1hat, tau0)
-                d1 = A(x1, out=d1, angles=angles)
+                d1 = A(x1, out=d1)
                 f1 = f(d1)
                 Dx = x1 - x0
                 backtrack_count += 1
@@ -138,7 +138,7 @@ def fasta(A, At, f, gradf, g, proxg, x0, y, angles, opts, vol_grad_weights = Non
             return sol, outs, opts
 
         if opts.adaptive and ~opts.accelerate:
-            gradf1 = At(gradf(d1), out=gradf1, angles=angles)
+            gradf1 = At(gradf(d1), out=gradf1)
             Dg = gradf1 + (x1hat - x0) / tau0
             dotprod = th.dot(Dx.view(-1), Dg.view(-1))
             tau_s = th.norm(Dx) ** 2 / dotprod
@@ -163,12 +163,12 @@ def fasta(A, At, f, gradf, g, proxg, x0, y, angles, opts, vol_grad_weights = Non
             x1 = x_accel1 + (alpha0 - 1) / alpha1 * (x_accel1 - x_accel0)
             d1 = d_accel1 + (alpha0 - 1) / alpha1 * (d_accel1 - d_accel0)
             # Compute the gradient needed on the next iteration
-            gradf1 = At(gradf(d1), out=gradf1, angles=angles)
+            gradf1 = At(gradf(d1), out=gradf1)
             func_values[i] = f(d1)
             tau1 = tau0
 
         if ~opts.adaptive and ~opts.accelerate:
-            gradf1 = At(gradf(d1), out=gradf1, angles=angles)
+            gradf1 = At(gradf(d1), out=gradf1)
             tau1 = tau0
 
 

@@ -93,8 +93,8 @@ def set_default_opts_tomography(opts, A, At, x0, y0, angles, gradf):
         y2 = th.randn_like(y0)
         gradf1 = th.zeros_like(x0)
         gradf2 = th.zeros_like(x0)
-        gradf1 = At(gradf(A(x1, out=y1, angles=angles)), out=gradf1, angles=angles)
-        gradf2 = At(gradf(A(x2, out=y2, angles=angles)), out=gradf2, angles=angles)
+        gradf1 = At(gradf(A(x1, out=y1)), out=gradf1)
+        gradf2 = At(gradf(A(x2, out=y2)), out=gradf2)
         opts.L = th.norm(gradf1 - gradf2) / th.norm(x2 - x1)
         opts.L = max(opts.L, 1e-6)
         opts.tau = 2 / opts.L / 10
